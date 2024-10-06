@@ -1,4 +1,6 @@
-# Projeto para INF2125
+# Projeto
+A ideia do projeto é fornecer uma espaço para estimar a quantidade de pessoas em algum ponto turístico do rio antes de ir ao local, dando a possibilidade ao turista da cidade de se planejar antes de visitar algum local do rio, como a praia de copacabana.
+
 - **Big Idea:** Cidades Inteligentes: Rio de Janeiro
 - **Essential Question:** Como impactar positivamente as pessoas da cidade do Rio de Janeiro
 - **Challenge:** Desenvolver alguma solução com IA que traga benefícios aos frequentadores e/ou moradores da cidade do Rio.
@@ -18,3 +20,4 @@
 
 # Repositório
 - Utilizar emojis do gitmoji.com antes de cada mensagem de commit para facilitar entendimento (?)
+
