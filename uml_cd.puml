@@ -1,0 +1,122 @@
+@startuml
+
+' Definição das entidades principais e hierarquia de previsões
+
+class Usuario {
+    +id: Integer
+    +email: String
+    +senha: String
+    +registrar()
+    +fazerLogin()
+    +salvarLocal(Local)
+    +enviarInformacao(Local, InformacaoEnviada)
+}
+
+class Local {
+    +id: Integer
+    +nome: String
+    +latitude: Double
+    +longitude: Double
+    +obterPrevisoes()
+    +obterAvisos()
+}
+
+class Previsao {
+    +id: Integer
+    +data: Date
+    +hora: Time
+    +latitude: Double
+    +longitude: Double
+    +quantidadeEstimativa: Integer
+}
+
+class Aviso {
+    +id: Integer
+    +descricao: String
+    +tipo: String
+    +fonte: String
+    +dataEmissao: Date
+    +local: Local
+}
+
+class InformacaoEnviada {
+    +id: Integer
+    +tipo: String
+    +conteudo: String
+    +dataEnvio: Date
+    +local: Local
+    +validarInformacao()
+}
+
+' Repositório de Dados (DAO para manipulação de dados)
+interface LocalDAO {
+    +salvarLocal(Local)
+    +buscarLocaisPorUsuario(Usuario)
+}
+
+interface PrevisaoDAO {
+    +gerarPrevisao(Local)
+    +buscarPrevisoesPorLocal(Local)
+}
+
+interface AvisoDAO {
+    +obterAvisos(Local)
+}
+
+interface InformacaoEnviadaDAO {
+    +salvarInformacao(InformacaoEnviada)
+    +buscarInformacoesPorLocal(Local)
+}
+
+' Herança para os modelos de previsão
+abstract class ModeloDePrevisao {
+    +id: Integer
+    +tipo: String
+    +processarDados()
+}
+
+class ModeloDeImagem extends ModeloDePrevisao {
+    +processarImagens()
+}
+
+class ModeloDeEvento extends ModeloDePrevisao {
+    +processarEventos()
+}
+
+class ModeloDeDadosHistoricos extends ModeloDePrevisao {
+    +processarDadosHistoricos()
+}
+
+' Conexão de dados entre Estimativa e Modelo
+class EstimativaDePessoas {
+    +usarModeloDePrevisao(ModeloDePrevisao)
+    +retornarEstimativa(Local)
+}
+
+class RepositorioDeDados {
+    +coletarDadosExternos()
+    +processarDadosExternos()
+    +obterDadosDeAPIsExternas()
+}
+
+' Definindo agregações, herança, dependências e associações para otimizar as interações
+
+Usuario "1" --> "N" Local: Salva
+Usuario "1" --> "N" InformacaoEnviada: Envia
+Local "1" o-- "N" Previsao: Possui
+Local "1" o-- "N" Aviso: Possui
+Usuario "1" --> "1" LocalDAO: Usa
+Usuario "1" --> "1" InformacaoEnviadaDAO: Usa
+Previsao "1" --> "1" PrevisaoDAO: Usa
+Aviso "1" --> "1" AvisoDAO: Usa
+InformacaoEnviada "1" --> "1" InformacaoEnviadaDAO: Usa
+RepositorioDeDados "1" --> "N" Previsao: Gera
+EstimativaDePessoas "1" --> "1" ModeloDePrevisao: Usa
+
+' Adicionando dependências com linhas tracejadas
+RepositorioDeDados ..> InformacaoEnviadaDAO: Processa Dados de Usuário
+RepositorioDeDados ..> AvisoDAO: Recebe Avisos Externos
+RepositorioDeDados ..> PrevisaoDAO: Alimenta Previsões
+EstimativaDePessoas ..> PrevisaoDAO: Calcula Previsão
+
+@enduml
