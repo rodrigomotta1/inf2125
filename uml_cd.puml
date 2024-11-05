@@ -1,7 +1,13 @@
 @startuml
+skinparam classFontColor automatic
+
+' Legenda para os hot spots
+legend
+|= Cor         |= Tipo            |
+| <#FFD580>      | Hot Spot         |
+endlegend
 
 ' Definição das entidades principais e hierarquia de previsões
-
 class Usuario {
     +id: Integer
     +email: String
@@ -69,31 +75,31 @@ interface InformacaoEnviadaDAO {
 }
 
 ' Herança para os modelos de previsão
-abstract class ModeloDePrevisao {
+abstract class ModeloDePrevisao #FFD580 {
     +id: Integer
     +tipo: String
     +processarDados()
 }
 
-class ModeloDeImagem extends ModeloDePrevisao {
+class ModeloDeImagem #FFD580 extends ModeloDePrevisao {
     +processarImagens()
 }
 
-class ModeloDeEvento extends ModeloDePrevisao {
+class ModeloDeEvento #FFD580 extends ModeloDePrevisao {
     +processarEventos()
 }
 
-class ModeloDeDadosHistoricos extends ModeloDePrevisao {
+class ModeloDeDadosHistoricos #FFD580 extends ModeloDePrevisao {
     +processarDadosHistoricos()
 }
 
 ' Conexão de dados entre Estimativa e Modelo
-class EstimativaDePessoas {
+class EstimativaDePessoas #FFD580 {
     +usarModeloDePrevisao(ModeloDePrevisao)
     +retornarEstimativa(Local)
 }
 
-class RepositorioDeDados {
+class RepositorioDeDados #FFD580 {
     +coletarDadosExternos()
     +processarDadosExternos()
     +obterDadosDeAPIsExternas()
