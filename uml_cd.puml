@@ -1,128 +1,114 @@
 @startuml
-skinparam classFontColor automatic
-
-' Legenda para os hot spots
-legend
-|= Cor         |= Tipo            |
-| <#FFD580>      | Hot Spot         |
-endlegend
-
-' Definição das entidades principais e hierarquia de previsões
-class Usuario {
-    +id: Integer
-    +email: String
-    +senha: String
-    +registrar()
-    +fazerLogin()
-    +salvarLocal(Local)
-    +enviarInformacao(Local, InformacaoEnviada)
+package models {
+    ' Representando o DAO padrão do Django
+    class models.Model <<DAO>> {
+        + save()
+        + delete()
+        + objects: Manager
+    }
 }
 
-class Local {
-    +id: Integer
-    +nome: String
-    +latitude: Double
-    +longitude: Double
-    +obterPrevisoes()
-    +obterAvisos()
+package forecast {
+    ' Classe abstrata ModeloDePrevisao
+    abstract class ModeloDePrevisao {
+        # nome_modelo: String
+        # parametros: Dict
+        + processar(entrada): Any
+    }
+
+    ' Classe especializada ModeloDePrevisaoImagem
+    class ModeloDePrevisaoImagem {
+        + processar(entrada: Dict): int
+    }
+
+    ModeloDePrevisaoImagem --|> ModeloDePrevisao
+
+    ' Classe especializada ModeloDePrevisaoSerie
+    class ModeloDePrevisaoSerie {
+        + processar(entrada: Dict): int
+    }
+
+    ModeloDePrevisaoSerie --|> ModeloDePrevisao
+
+    ' Classe Factory para gerar modelos de previsão
+    class FactoryModeloDePrevisao {
+        + gerar_modelo(nome_modelo: String, parametros: Dict): ModeloDePrevisao
+    }
+
+    FactoryModeloDePrevisao ..> ModeloDePrevisao : cria
 }
 
-class Previsao {
-    +id: Integer
-    +data: Date
-    +hora: Time
-    +latitude: Double
-    +longitude: Double
-    +quantidadeEstimativa: Integer
+package core {
+    ' Classe Usuario herda de models.Model
+    class Usuario {
+        - user: OneToOneField<User>
+        - locais_favoritos: ManyToManyField<Local>
+        + save()
+        + delete()
+        + objects
+    }
+
+    Usuario --|> models.Model
+    Usuario "0..*" --> "0..*" Local : salva
+
+    ' Classe Local herda de models.Model
+    class Local {
+        - nome: String
+        - latitude: Decimal
+        - longitude: Decimal
+        - avisos: ManyToManyField<Aviso>
+        - informacoes: ManyToManyField<Informacao>
+        + estimar(modelo: ModeloDePrevisao): Any
+        + save()
+        + delete()
+        + objects
+    }
+
+    Local --|> models.Model
+    Local "1" --> "0..*" Aviso : possui
+    Local "1" --> "0..*" Informacao : possui
+    Local ..> ModeloDePrevisao : utiliza
+
+    ' Classe Previsao herda de models.Model
+    class Previsao {
+        - data: DateField
+        - hora: TimeField
+        - estimativa_pessoas: PositiveInteger
+        - modelo: String
+        - local: ForeignKey<Local>
+        + save()
+        + delete()
+        + objects
+    }
+
+    Previsao --|> models.Model
+    Previsao "0..*" --> "1" Local : pertence
+
+    ' Classe Aviso herda de models.Model
+    class Aviso {
+        - descricao: Text
+        - tipo: String
+        - fonte: String
+        - data: DateField
+        + save()
+        + delete()
+        + objects
+    }
+
+    Aviso --|> models.Model
+
+    ' Classe Informacao herda de models.Model
+    class Informacao {
+        - tipo: String
+        - descricao: Text
+        - imagem: ImageField
+        - usuario: ForeignKey<Usuario>
+        + save()
+        + delete()
+        + objects
+    }
+
+    Informacao --|> models.Model
+    Informacao "0..*" --> "1" Usuario : enviada_por
 }
-
-class Aviso {
-    +id: Integer
-    +descricao: String
-    +tipo: String
-    +fonte: String
-    +dataEmissao: Date
-    +local: Local
-}
-
-class InformacaoEnviada {
-    +id: Integer
-    +tipo: String
-    +conteudo: String
-    +dataEnvio: Date
-    +local: Local
-    +validarInformacao()
-}
-
-' Repositório de Dados (DAO para manipulação de dados)
-interface LocalDAO {
-    +salvarLocal(Local)
-    +buscarLocaisPorUsuario(Usuario)
-}
-
-interface PrevisaoDAO {
-    +gerarPrevisao(Local)
-    +buscarPrevisoesPorLocal(Local)
-}
-
-interface AvisoDAO {
-    +obterAvisos(Local)
-}
-
-interface InformacaoEnviadaDAO {
-    +salvarInformacao(InformacaoEnviada)
-    +buscarInformacoesPorLocal(Local)
-}
-
-' Herança para os modelos de previsão
-abstract class ModeloDePrevisao #FFD580 {
-    +id: Integer
-    +tipo: String
-    +processarDados()
-}
-
-class ModeloDeImagem #FFD580 extends ModeloDePrevisao {
-    +processarImagens()
-}
-
-class ModeloDeEvento #FFD580 extends ModeloDePrevisao {
-    +processarEventos()
-}
-
-class ModeloDeDadosHistoricos #FFD580 extends ModeloDePrevisao {
-    +processarDadosHistoricos()
-}
-
-' Conexão de dados entre Estimativa e Modelo
-class EstimativaDePessoas #FFD580 {
-    +usarModeloDePrevisao(ModeloDePrevisao)
-    +retornarEstimativa(Local)
-}
-
-class RepositorioDeDados #FFD580 {
-    +coletarDadosExternos()
-    +processarDadosExternos()
-    +obterDadosDeAPIsExternas()
-}
-
-' Definindo agregações, herança, dependências e associações para otimizar as interações
-
-Usuario "1" --> "N" Local: Salva
-Usuario "1" --> "N" InformacaoEnviada: Envia
-Local "1" o-- "N" Previsao: Possui
-Local "1" o-- "N" Aviso: Possui
-Usuario "1" --> "1" LocalDAO: Usa
-Usuario "1" --> "1" InformacaoEnviadaDAO: Usa
-Previsao "1" --> "1" PrevisaoDAO: Usa
-Aviso "1" --> "1" AvisoDAO: Usa
-InformacaoEnviada "1" --> "1" InformacaoEnviadaDAO: Usa
-RepositorioDeDados "1" --> "N" Previsao: Gera
-EstimativaDePessoas "1" --> "1" ModeloDePrevisao: Usa
-
-' Adicionando dependências com linhas tracejadas
-RepositorioDeDados ..> InformacaoEnviadaDAO: Processa Dados de Usuário
-RepositorioDeDados ..> AvisoDAO: Recebe Avisos Externos
-RepositorioDeDados ..> PrevisaoDAO: Alimenta Previsões
-EstimativaDePessoas ..> PrevisaoDAO: Calcula Previsão
-
 @enduml

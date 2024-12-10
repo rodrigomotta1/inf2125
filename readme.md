@@ -30,7 +30,7 @@ Este projeto consiste no desenvolvimento de uma aplicação web que permite a vi
 - **[RF08]** Permitir login de usuários com email e senha.
 - **[RF09]** Autenticar usuários de forma segura.
 - **[RF10]** Permitir recuperação de senha de usuários.
-- **[RF11]** Permitir que usuários logados salvem locais de interesse.
+- **[RF11]** Permitir que usuários logados salvem locais de interesse. 
 - **[RF12]** Exibir atividade de locais salvos no painel lateral para usuários logados.
 - **[RF13]** Permitir que usuários removam locais salvos.
 - **[RF14]** Permitir envio de informações pelos usuários sobre a atividade em locais.
@@ -55,6 +55,8 @@ Este projeto consiste no desenvolvimento de uma aplicação web que permite a vi
 - **[RF33]** Permitir configuração de preferências de notificação pelos usuários.
 - **[RF34]** Fornecer painel administrativo para moderar e gerenciar conteúdo.
 - **[RF35]** Exportar dados em formatos como CSV para análises externas.
+
+Obs: os seguintes requisitos são especificamente relacionados a implementação do *backend*: **RF11, RF13, RF14, RF16, RF17, RF18, RF19, RF32, RF33, RF34, RF35**
 
 ---
 
