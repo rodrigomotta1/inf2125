@@ -16,6 +16,14 @@ Este projeto consiste no desenvolvimento de uma aplicação web que permite a vi
 - O sistema faz uso de **diferentes modelos de previsão**, que podem ser alimentados por dados de usuários e fontes externas, para gerar estimativas da quantidade de pessoas.
 - A visualização do mapa e a interação com o painel de informações são feitas via frontend em **React**, enquanto o **backend Django REST** processa as estimativas e recupera os dados necessários.
 
+## Documentação disponível
+- [x] [CBL-SE](/docs/cbl.md) redigido
+- [x] [Reqisitos funcionais, Requisitos não funcionais e Regras de negócio](/docs/requisitos.md)
+- [x] [Diagrama de classes UML](/docs/diagrama_classes.puml) *(deve ser visualizado através de algum leitor de [PlantUML](https://www.planttext.com/))*
+- [x] [Modelo conceitual](/docs/conceitual.brM3) e [lógico](/docs/logico.brM3) de dados *(devem ser abertos utilizando o programa [brModelo](https://www.sis4.com/brModelo/download.html) - requer Java)*
+- [x] [Cronograma de desenvolvimento](/docs/cronograma.md)
+
+
 ## 🚀 Setup
 ### Backend
 *(necessita instaslação do **Anaconda** e **python**)*
