@@ -52,7 +52,7 @@ class ModeloDePrevisaoImagem(ModeloDePrevisao):
 class ModeloDePrevisaoSerie(ModeloDePrevisao):
     """
     Modelo de previsão especializado em análise de séries temporais.
-    """
+    """ 
 
     def processar(self, entrada):
         """

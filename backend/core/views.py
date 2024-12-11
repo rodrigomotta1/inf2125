@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from core.models import Usuario, Local, Aviso, Informacao, Previsao
 from core.serializers import UsuarioSerializer, LocalSerializer, AvisoSerializer, InformacaoSerializer, PrevisaoSerializer
 from forecast.model_factory import FactoryModeloDePrevisao
@@ -27,7 +27,7 @@ class LocalViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def previsoes(self, request, pk=None):
         local = self.get_object()
-        previsoes = local.previsao_set.all()
+        previsoes = Previsao.objects.filter(local=local)
         serializer = PrevisaoSerializer(previsoes, many=True)
         return Response(serializer.data)
 
@@ -45,7 +45,7 @@ class LocalViewSet(viewsets.ModelViewSet):
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     @action(detail=False, methods=['get'])
     def locais_favoritos(self, request):
