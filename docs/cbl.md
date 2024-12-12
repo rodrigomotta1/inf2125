@@ -37,8 +37,15 @@
 ### Development Approach
 
 - **Indicators:**
+  - Aderência às metas de usabilidade: número de interações realizadas pelos usuários no sistema
+  - Percentual de precisão das estimativas dos modelos preditivos
+  - Feedback de stakeholders (turistas, moradores e órgãos da prefeitura) sobre a eficácia do sistema
+  - Frequência de uso do sistema por usuários únicos e usuários retornantes
+  - Quantidade de locais salvos pelos usuários autenticados
 
 - **Test Strategy:**
+  - Execução de testes unitários para verificar corretude de entradas e saídas de todas as rotas da API
+  - Execução de testes de usabilidade para verificar a adequação da interface de usuário aos requisitos levantados e aos padrões de usabilidade
 
 - **Design Patterns** *(ver classes em [diagrama_classes.puml](/docs/diagrama_classes.puml))*:
   - TemplateMethod

@@ -1,6 +1,13 @@
 @startuml
+
+legend right
+  | Cor | Tipo |
+  |<#9AC2C5>| Framework - Frozen Spot |
+  |<#ffe66d>| Framework - Hot Spot|
+  |<#E9E9E9>| Instância |
+endlegend
+
 package models {
-    ' Representando o DAO padrão do Django
     class models.Model <<DAO>> {
         + save()
         + delete()
@@ -9,40 +16,65 @@ package models {
 }
 
 package forecast {
-    ' Classe abstrata ModeloDePrevisao
-    abstract class ModeloDePrevisao {
+    abstract class ModeloDePrevisao #ffe66d {
         # nome_modelo: String
         # parametros: Dict
         + processar(entrada): Any
+        
+        + data_lake: DataLake
     }
 
-    ' Classe especializada ModeloDePrevisaoImagem
-    class ModeloDePrevisaoImagem {
+    class ModeloDePrevisaoImagem #9AC2C5 {
         + processar(entrada: Dict): int
     }
 
     ModeloDePrevisaoImagem --|> ModeloDePrevisao
 
-    ' Classe especializada ModeloDePrevisaoSerie
-    class ModeloDePrevisaoSerie {
+    class ModeloDePrevisaoSerie #9AC2C5 {
         + processar(entrada: Dict): int
     }
 
     ModeloDePrevisaoSerie --|> ModeloDePrevisao
 
-    ' Classe Factory para gerar modelos de previsão
     class FactoryModeloDePrevisao {
         + gerar_modelo(nome_modelo: String, parametros: Dict): ModeloDePrevisao
     }
 
     FactoryModeloDePrevisao ..> ModeloDePrevisao : cria
+    
 }
 
 package core {
-    ' Classe Usuario herda de models.Model
+    abstract class Observer #ffe66d {
+        + subject : Any
+        + update(): void
+    }
+
+    class LocalObserver #9AC2C5{
+        + subject: Any
+        + update(): void
+    }
+
+    LocalObserver --|> Observer
+
+    abstract class DataLake <<DAO>> #ffe66d {
+        - db: DataLake
+        + getInstance(): DataLake
+    }
+
+    DataLake --> DataLake : retorna
+    
+    class MongoAccess #9AC2C5{
+        - db: MongoAccess
+        + getInstance(): MongoAccess
+        + getSeries(series_id: int): list
+    }
+    
+    MongoAccess --|> core.DataLake
+
     class Usuario {
-        - user: OneToOneField<User>
-        - locais_favoritos: ManyToManyField<Local>
+        + user: OneToOneField<User>
+        + locais_favoritos: ManyToManyField<Local>
         + save()
         + delete()
         + objects
@@ -51,13 +83,15 @@ package core {
     Usuario --|> models.Model
     Usuario "0..*" --> "0..*" Local : salva
 
-    ' Classe Local herda de models.Model
     class Local {
-        - nome: String
-        - latitude: Decimal
-        - longitude: Decimal
-        - avisos: ManyToManyField<Aviso>
-        - informacoes: ManyToManyField<Informacao>
+        - inscritos: List<Usuario>
+        - estado: int
+        + attach()
+        + nome: String
+        + latitude: Decimal
+        + longitude: Decimal
+        + avisos: ManyToManyField<Aviso>
+        + informacoes: ManyToManyField<Informacao>
         + estimar(modelo: ModeloDePrevisao): Any
         + save()
         + delete()
@@ -68,14 +102,14 @@ package core {
     Local "1" --> "0..*" Aviso : possui
     Local "1" --> "0..*" Informacao : possui
     Local ..> ModeloDePrevisao : utiliza
+    Local ..> LocalObserver : utiliza
 
-    ' Classe Previsao herda de models.Model
     class Previsao {
-        - data: DateField
-        - hora: TimeField
-        - estimativa_pessoas: PositiveInteger
-        - modelo: String
-        - local: ForeignKey<Local>
+        + data: DateField
+        + hora: TimeField
+        + estimativa_pessoas: PositiveInteger
+        + modelo: String
+        + local: ForeignKey<Local>
         + save()
         + delete()
         + objects
@@ -84,12 +118,11 @@ package core {
     Previsao --|> models.Model
     Previsao "0..*" --> "1" Local : pertence
 
-    ' Classe Aviso herda de models.Model
     class Aviso {
-        - descricao: Text
-        - tipo: String
-        - fonte: String
-        - data: DateField
+        + descricao: Text
+        + tipo: String
+        + fonte: String
+        + data: DateField
         + save()
         + delete()
         + objects
@@ -97,12 +130,11 @@ package core {
 
     Aviso --|> models.Model
 
-    ' Classe Informacao herda de models.Model
     class Informacao {
-        - tipo: String
-        - descricao: Text
-        - imagem: ImageField
-        - usuario: ForeignKey<Usuario>
+        + tipo: String
+        + descricao: Text
+        + imagem: ImageField
+        + usuario: ForeignKey<Usuario>
         + save()
         + delete()
         + objects
@@ -110,5 +142,8 @@ package core {
 
     Informacao --|> models.Model
     Informacao "0..*" --> "1" Usuario : enviada_por
+    
+    forecast.ModeloDePrevisao ..> MongoAccess : utiliza
 }
+
 @enduml

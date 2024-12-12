@@ -34,4 +34,6 @@ pip install -r requirements.txt
 python backend/manage.py runserver
 ```
 
+Se necessário, acesse o [painel de administração](localhost:8000/admin) usando o usuário `admin` com senha `admin`
+
 
