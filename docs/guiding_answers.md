@@ -43,7 +43,9 @@ Abaixo estão listadas todas as ***Guiding Questions*** e ***Guiding Activities*
   
 - **GQ08**: ~~Quais padrões de projeto geralmente adequados para models do DjangoREST?~~
 - **GQ09**: Como são aplicados os padrões de projeto no contexto de models do Django?
-  - ***[Resources](#guiding-resources)***:
+  - Padrão Observer deve ser implementado utilizando Django Signals
+  - Padrão Singleton para acesso a dados não deveria ser utilizado segundo **R17**
+  - ***[Resources](#guiding-resources)***: R16, R17
 
 
 ## *Guiding Actvities*
@@ -84,6 +86,11 @@ Abaixo estão listadas todas as ***Guiding Questions*** e ***Guiding Activities*
   - Dissertação de mestrado da FGV que indica metodologias para análise de dados de telefonia celular para examinar a movimentação na cidade em dias de grandes eventos.
 - **RF15**: https://www.academia.edu/124508201/Modelos_De_Previs%C3%A3o_De_Tr%C3%A2nsito_Uma_Contribui%C3%A7%C3%A3o_Para_a_Gest%C3%A3o_P%C3%BAblica_Do_Tr%C3%A1fego_Na_Cidade_De_S%C3%A3o_Paulo
   - Estudo da FEA-SUP sobre modelos de previsão de trânsito.
+- **R16**: https://www.youtube.com/watch?v=p4vLpz1D4ow&t=213s
+  - Video explicativo do canal *Very Academy* sobre como implementar o padrão Observer utiliando o módulo `signal` do Django. Essa parece ser a forma que melhor cumpre o objetivo de manter a estrutura do projeto coesa com baixo acoplamento.
+- **R17**: https://daniel.feldroy.com/posts/when-to-use-mongodb-with-django
+  - Artigo de Daniel Feldroy sobre vantagens e desvantagens de usar o Mongo. O artigo discute levemente sobre a decisão de usar ou não usar o ORM do Django para acesso ao Banco de Dados, deixando claro que a melhor opção é sempre utilizar o ORM do Django com um banco relacional, uma vez que essa funcionalidade do *framework* já possui a maioria das facilidades e controles, principalmente de segurança e desempenho, para acesso a dados em um BD (nesse caso, estritamente relacional)
+- **R18**: 
 
 ## Misc.
 - Como renderizar mapas de calor usando a biblioteca do Google: https://developers.google.com/maps/documentation/javascript/heatmaplayer?hl=pt-br (usar como escala a estimativa de pessoas geradas para cada lugar)
