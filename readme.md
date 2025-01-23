@@ -18,9 +18,9 @@ Este projeto consiste no desenvolvimento de uma aplicação web que permite a vi
 
 ## Documentação disponível
 - [x] [CBL-SE](/docs/cbl.md) redigido
+- [x] [Registro de perguntas, respostas e recursos](/docs/guiding_answers.md)
 - [x] [Reqisitos funcionais, Requisitos não funcionais e Regras de negócio](/docs/requisitos.md)
 - [x] [Diagrama de classes UML](/docs/diagrama_classes.puml) *(deve ser visualizado através de algum leitor de [PlantUML](https://www.planttext.com/))*
-- [x] ~~[Modelo conceitual](/docs/conceitual.brM3) e [lógico](/docs/logico.brM3) de dados *(devem ser abertos utilizando o programa [brModelo](https://www.sis4.com/brModelo/download.html) - requer Java)*~~
 - [x] ~~[Cronograma de desenvolvimento](/docs/cronograma.md)~~
 
 
@@ -34,6 +34,11 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
-Se necessário, acesse o [painel de administração](localhost:8000/admin) usando o usuário `admin` com senha `admin`.
+## Estrutura
+**Apps**:
+- `visualizer`: responsável pela lógica principal do site, viabilizando a visualização do mapa de calor e controle das entidades envolvidas
+- `forecast`: responsável pelas lógicas de implementação e execução dos modelos de previsão e estimadores de quantidade de pessoas dos locais
 
+
+*Se necessário, acesse o [painel de administração](localhost:8000/admin) usando o usuário `admin` com senha `admin`.*
 
