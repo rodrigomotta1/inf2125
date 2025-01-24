@@ -32,7 +32,7 @@
 
 - **Prototype Test Strategy:** Uso do Figma para construção do protótipo de baixa ou média fidelidade. Validação feita pela própria equipe.
 
-- **Requirements**: ver em [requisitos.md](/docs/requisitos.md)
+- **Requirements**: ver em [requisitos.md](/movrio/docs/requisitos.md)
 
 ### Development Approach
 
@@ -48,7 +48,7 @@
   - Execução de testes de usabilidade para verificar a adequação da interface de usuário aos requisitos levantados e aos padrões de usabilidade
 
 - **Design Patterns**:
-  - Disponível em [/docs/uml_classes.pdf](/docs/uml_classes.pdf)
+  - Disponível em [/movrio/docs/uml_classes.pdf](/movrio/docs/uml_classes.pdf)
   - Singleton
   - Observer
   - TemplateMethod
