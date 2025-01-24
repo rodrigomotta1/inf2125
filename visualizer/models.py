@@ -3,40 +3,8 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, URLValidator
-
-
-class Estimate(models.Model):
-    """
-    NOTE: Always use datetime.datetime instances to set value of datetime:models.DateTimeField attribute
-    """
-    datetime = models.DateTimeField()
-
-    amount = models.IntegerField(
-        validators=[
-            MinValueValidator(0)
-        ]
-    )
-
-    # estimation_model = ?
-
-    def clean(self):
-        """
-        Include Estimate model pre-validation methods.
-        This is applied before saving any instance of this class.
-        """
-        super().clean()
-        current_datetime = now()
-
-        # Check if Estimate instance is for the present or the future not the past
-        if self.datetime and self.datetime < current_datetime:
-            raise ValidationError(f"datetime: A data de estimativa não pode ser anterior a data atual ({current_datetime})")
-    
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Data: {self.datetime}, Quant.: {self.amount}"
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
 
 class Place(models.Model):
@@ -61,9 +29,42 @@ class Place(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
-    current_estimate = models.ForeignKey(Estimate, on_delete=models.CASCADE)
-    estimates = models.ManyToManyField(Estimate)
-    # informations = models.Man TODO: check how to relate an abstract class model to a concrete class model
+
+class Estimate(models.Model):
+    """
+    NOTE: Always use datetime.datetime instances to set value of datetime:models.DateTimeField attribute
+    """
+    datetime = models.DateTimeField()
+
+    amount = models.IntegerField(
+        validators=[
+            MinValueValidator(0)
+        ]
+    )
+
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="estimates")
+
+    # estimation_model = ?
+
+    def clean(self):
+        """
+        Include Estimate model pre-validation methods.
+        This is applied before saving any instance of this class.
+        """
+        super().clean()
+        current_datetime = now()
+
+        # Check if Estimate instance is for the present or the future not the past
+        if self.datetime and self.datetime < current_datetime:
+            raise ValidationError(f"datetime: A data de estimativa não pode ser anterior a data atual ({current_datetime})")
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Data: {self.datetime}, Quant.: {self.amount}"
+
 
 
 class UserProfile(models.Model):
@@ -88,9 +89,11 @@ class Information(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     verified = models.BooleanField(default=False)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="informations")
 
     class Meta:
         abstract = True
+
 
 
 class ThirdPartyInformation(Information):
