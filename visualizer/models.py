@@ -3,11 +3,12 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, URLValidator
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+
+from movrio.interfaces import Observer, Publisher
+from movrio.utils import send_email_notification
 
 
-class Place(models.Model):
+class Place(models.Model, Publisher):
     """
     TODO: Signals arch to notify Users when estimations changed; Methods to access specifics of a place
     """
@@ -23,11 +24,35 @@ class Place(models.Model):
         MOVIMENTACAO_INTENSA = "MI", "Movimentação intensa"
         MUITO_MOVIMENTADO = "MM", "Muito movimentado"
 
-    type_ = models.CharField(max_length=6, choices=PlaceType, default=PlaceType.BAIRRO, db_column="type")
+    type = models.CharField(max_length=6, choices=PlaceType, default=PlaceType.BAIRRO, db_column="type")
     status = models.CharField(max_length=2, choices=StatusType)
     name = models.CharField(max_length=30)
     latitude = models.FloatField()
     longitude = models.FloatField()
+
+    observers = models.ManyToManyField('UserProfile', related_name="saved_places")
+
+    def add_observer(self, observer: Observer):
+        self.observers.add(observer)
+
+    def remove_observer(self, observer: Observer):
+        self.observers.remove(observer)
+    
+    def notify_observers(self, event_data):
+        for observer in self.observers.all():
+            print(observer)
+            observer.update(event_data)
+
+    def change_status(self, new_status: str):
+        self.status = new_status
+        self.save()
+        self.notify_observers({
+            'place': self.name,
+            'status': new_status
+        })
+
+    def __str__(self):
+        return self.name
 
 
 class Estimate(models.Model):
@@ -44,7 +69,6 @@ class Estimate(models.Model):
 
     place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="estimates")
 
-    # estimation_model = ?
 
     def clean(self):
         """
@@ -63,17 +87,21 @@ class Estimate(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Data: {self.datetime}, Quant.: {self.amount}"
+        return f"{self.datetime.strftime('%d/%m/%Y')} às {self.datetime.strftime('%H:%M')}: {self.amount} pessoas"
 
 
 
-class UserProfile(models.Model):
+class UserProfile(models.Model, Observer):
     """
     Core User attributes belongs to default User model from Django
     User attributes that are "profile" related (such as notification enabling choice) must be in this class
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     notifications_enabled = models.BooleanField(default=False)
+
+    def update(self, event_data):
+        if self.notifications_enabled:
+            send_email_notification(self, f"O status de {event_data['place']} mudou para {event_data['status']}")
 
     def __str__(self):
         return self.user.username
@@ -89,7 +117,13 @@ class Information(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     verified = models.BooleanField(default=False)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="informations")
+
+    place = models.ForeignKey(
+        Place, 
+        on_delete=models.CASCADE, 
+        related_name="%(app_label)s_%(class)s_related", 
+        related_query_name="%(app_label)s_%(class)ss"
+    )
 
     class Meta:
         abstract = True
@@ -102,7 +136,7 @@ class ThirdPartyInformation(Information):
     """
     source_name = models.TextField()
     source_url = models.TextField(validators=[
-        URLValidator(verify_exists=True)
+        URLValidator()
     ])
 
 
@@ -113,6 +147,6 @@ class ImageInformation(Information):
 
 class VideoInformation(Information):
     video_url = models.TextField(validators=[
-        URLValidator(verify_exists=True)
+        URLValidator()
     ])
     author = models.ForeignKey(User, on_delete=models.CASCADE)

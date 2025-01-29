@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}MOVRIO{% endblock %}
+
+{% block content %}
+
+aaa
+{% for place in places %}
+    <h2>{{ place.title }}</h2>
+    <p>{{ place.body }}</p>
+{% endfor %}
+
+
+{% endblock %}
