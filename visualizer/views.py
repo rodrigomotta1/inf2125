@@ -41,6 +41,7 @@ def index(request):
                     trend_icon = "ti ti-trending-down"
 
             activity_data.append({
+                "id": place.pk,
                 "name": place.name,
                 "status": place.status,
                 "trend_icon": trend_icon
@@ -57,7 +58,7 @@ def index(request):
     saved_places = []
     if request.user.is_authenticated:
         user_profile = UserProfile.objects.get(user=request.user)
-        saved_places = user_profile.saved_places.all()
+        saved_places = [place.pk for place in user_profile.saved_places.all()] 
 
     context = {
         "heatmap_data": json.dumps(heatmap_data),

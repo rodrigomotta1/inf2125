@@ -11,7 +11,7 @@
 
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    
+
      <!-- Arquivo CSS personalizado -->
      <link href="{% static 'visualizer/css/style.css' %}" rel="stylesheet">
     <style>
@@ -31,10 +31,32 @@
 </head>
 
 <body>
-    <!-- Navbar fixa no topo -->
+    <!-- Navbar personalizada -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">MOVRIO</a>
+        <div class="container-fluid d-flex align-items-center">
+            
+            <!-- Logo -->
+            <a class="navbar-brand ms-2 fw-bold" href="#">MOVRIO</a>
+
+            <!-- Espaço para alinhar ao limite da sidebar -->
+            <div style="width: 183px;"></div>
+
+            <!-- Formulário de busca -->
+            <form class="d-flex flex-grow-1" id="searchForm" style="max-width: 600px;">
+                <div class="input-group w-100">
+                    <input id="searchBox" class="form-control" type="text" placeholder="Buscar local..." aria-label="Search">
+                    <button class="btn btn-success" type="submit">
+                        <i class="ti ti-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Botões de autenticação -->
+            <div class="d-flex ms-auto">
+                <a href="#" class="btn btn-light me-2"><i class="ti ti-login-2 me-2"></i>Entrar</a>
+                <a href="#" class="btn btn-outline-light me-2 border border-dark"><i class="ti ti-login me-2"></i>Cadastrar-se</a>
+            </div>
+
         </div>
     </nav>
 
