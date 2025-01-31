@@ -1,0 +1,14 @@
+/* @font-face {
+    font-family: 'MinhaFonte';
+    src: url('../fonts/Traffic3.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+} */
+
+/* Importa a fonte Inter do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Modifica a variável do Bootstrap para usar a fonte personalizada */
+:root {
+    --bs-body-font-family: 'Inter', sans-serif !important;
+}

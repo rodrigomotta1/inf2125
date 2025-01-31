@@ -1,0 +1,118 @@
+{% extends "visualizer/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+    }
+    
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex w-100 h-100">
+    
+    <!-- Sidebar -->
+    <div class="d-flex flex-column bg-light border-end p-3" style="width: 300px; overflow-y: auto;">
+        
+        <!-- Seção 1: Atividade -->
+        <div class="flex-grow-1">
+            <h6 class="text-muted fs-5">
+                <i class="ti ti-activity fs-4"></i> Atividade
+            </h6>
+            <div class="scrollable-section">
+                {% for place in activity_data %}
+                    <div class="card p-2 mb-2 shadow-sm
+                        {% if place.status == 'PM' %} bg-success text-white
+                        {% elif place.status == 'MI' %} bg-warning text-dark
+                        {% else %} bg-danger text-white {% endif %}">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fs-7">{{ place.name }}</h6>
+                            <i class="{{ place.trend_icon }} fs-4"></i>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted fs-7">Nenhuma atividade registrada.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Seção 2: Notificações -->
+        <div class="flex-grow-1">
+            <h6 class="text-muted fs-5">
+                <i class="ti ti-bell fs-4"></i> Notificações
+            </h6>
+            <div class="scrollable-section">
+                {% for notification in notifications %}
+                    <div class="card p-3 mb-3 shadow-sm">
+                        <div class="d-flex align-items-center">
+                            <i class="ti ti-info-circle fs-4 text-primary"></i>
+                            <h6 class="ms-2 mb-0 fs-5">{{ notification.title }}</h6>
+                        </div>
+                        <p class="mt-2 text-muted fs-5">{{ notification.description }}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" class="text-decoration-none">Ver mais</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted fs-7">Nenhuma notificação disponível.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Seção 3: Locais Salvos -->
+        <div class="flex-grow-1">
+            <h6 class="text-muted fs-5">
+                <i class="ti ti-map-pin fs-4"></i> Locais Salvos
+            </h6>
+            <div class="scrollable-section">
+                {% if user_authenticated %}
+                    {% for place in activity_data %}
+                        <div class="card p-2 mb-2 border-primary text-primary shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 fs-7">{{ place.name }}</h6>
+                                <i class="{{ place.trend_icon }} fs-4"></i>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted fs-5">Você ainda não salvou nenhum local.</p>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center p-4">
+                        <p class="text-muted fs-7">Entre na sua conta para salvar locais e acompanhar o estado deles.</p>
+                        <a href="#" class="btn btn-light fs-8"><i class="ti ti-login-2 fs-5"></i> Entrar / Cadastrar</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Mapa -->
+    <div class="flex-grow-1">
+        <div id="map" class="w-100 h-100"></div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        var heatmapData = JSON.parse("{{heatmap_data | escapejs}}");
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=visualization"></script>
+    <script src="{% static 'visualizer/js/heatmap.js' %}"></script>
+{% endblock %}
