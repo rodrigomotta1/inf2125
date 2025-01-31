@@ -33,7 +33,7 @@ def index(request):
             current_estimate = estimates.first()
             future_estimate = estimates.filter(datetime__gt=current_estimate.datetime).first()
 
-            trend_icon = "ti ti-line-dashed"
+            trend_icon = "ti ti-minus"
             if future_estimate:
                 if future_estimate.amount > current_estimate.amount:
                     trend_icon = "ti ti-trending-up"

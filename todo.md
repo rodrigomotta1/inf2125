@@ -1,0 +1,7 @@
+- Criar models de modelos de estimativa/previsao, fornecendo dados mock (procurar biblioteca que faz isso)
+- Consertar funcionamento do mapa
+- Criar tela de login/cadastro
+- Criar modal de configurações quando usuário estiver logado
+- Criar modal ver mais de uma notificação
+- Criar modal ver mais de um local
+- 
