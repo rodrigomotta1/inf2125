@@ -53,8 +53,77 @@
 
             <!-- Botões de autenticação -->
             <div class="d-flex ms-auto">
-                <a href="#" class="btn btn-light me-2"><i class="ti ti-login-2 me-2"></i>Entrar</a>
-                <a href="#" class="btn btn-outline-light me-2 border border-dark"><i class="ti ti-login me-2"></i>Cadastrar-se</a>
+                {% if user.is_authenticated %}
+                    <!-- Botão de Logout -->
+                    <a href="{% url 'logout' %}" class="btn btn-outline-light me-2 logout-btn">
+                        <i class="ti ti-logout"></i> Sair
+                    </a>
+                {% else %}
+                    <!-- Botão de Login -->
+                    <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="ti ti-login"></i> Entrar
+                    </button>
+                    <button class="btn btn-success fw-2" data-bs-toggle="modal" data-bs-target="#signupModal" ><i class="ti ti-location"></i> Cadastrar-se</button>
+                {% endif %}
+            </div>
+
+            <!-- Modal de Login -->
+            <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content p-4">
+                        <form method="POST" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label">E-mail</label>
+                                <input type="text" class="form-control" name="username" id="id_username" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_password" class="form-label">Senha</label>
+                                <input type="password" class="form-control" name="password" id="id_password" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100">Entrar</button>
+
+                            <div class="text-center mt-3">
+                                <a href="{% url 'password_reset' %}" class="text-muted">Esqueci minha senha</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Cadastro -->
+            <div class="modal fade" id="signupModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content p-4">
+                        <form method="POST" action="{% url 'signup' %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label">Nome de Usuário</label>
+                                <input type="text" class="form-control" name="username" id="id_username" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_password1" class="form-label">Senha</label>
+                                <input type="password" class="form-control" name="password1" id="id_password1" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_password2" class="form-label">Confirme a Senha</label>
+                                <input type="password" class="form-control" name="password2" id="id_password2" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+
+                            <div class="text-center mt-3">
+                                <a href="#" class="text-muted" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Já tem uma conta? Entrar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
         </div>

@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, URLValidator
 
-from movrio.interfaces import Observer, Publisher
+from movrio.interfaces.observer import Observer, Publisher
 from movrio.utils import send_email_notification
 
 
