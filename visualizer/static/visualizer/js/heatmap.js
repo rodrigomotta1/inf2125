@@ -2,6 +2,7 @@ var map;
 var heatmap;
 
 function initMap() {
+    console.log("JavaScript carregado corretamente.");
     // Inicializa o mapa
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,

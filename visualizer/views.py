@@ -1,14 +1,15 @@
-
 import json
 from itertools import chain
 
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.shortcuts import render
 
 from .models import Place, ThirdPartyInformation, ImageInformation, VideoInformation, UserProfile
+
 
 def index(request):
     places = Place.objects.all()
@@ -72,6 +73,21 @@ def index(request):
 
     return render(request, "visualizer/heatmap.html", context)
 
+
+class CustomLoginView(LoginView):
+    """
+    Sobrescreve o LoginView para exibir erros na index.html e abrir automaticamente o modal de login em caso de erro.
+    """
+    template_name = "visualizer/heatmap.html"
+
+    def form_invalid(self, form):
+        """
+        Se o login falhar, renderiza index.html passando os erros do formulário.
+        """
+        return render(self.request, self.template_name, {
+            "form": form,
+            "show_login_modal": True  # 🔹 Adiciona um flag para abrir o modal
+        })
 
 class SignUpView(CreateView):
     form_class = UserCreationForm

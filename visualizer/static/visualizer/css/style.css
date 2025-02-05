@@ -47,3 +47,27 @@
 .invalid-feedback {
     display: block;
 }
+
+.sidebar {
+    width: 40vw; /* 🔹 Ocupa no máximo 10% da largura da tela */
+    max-width: 400px; /* 🔹 Garante que não fique muito estreita */
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 🔹 Ocupa toda a altura da tela */
+    overflow: hidden;
+}
+
+.sidebar-section {
+    flex-grow: 1;
+    overflow-y: auto; /* 🔹 Scroll apenas se necessário */
+    padding: 10px;
+}
+
+/* Proporção das seções */
+.section-activity { flex-basis: 30%; }
+.section-notifications { flex-basis: 40%; }
+.section-saved { flex-basis: 30%; }
+
+.notification-card {
+    font-size: 0.9rem !important;
+}

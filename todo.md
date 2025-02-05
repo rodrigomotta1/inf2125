@@ -1,6 +1,8 @@
-- Consertar funcionamento do mapa
-- Criar tela de login/cadastro
-- Criar modal de configurações quando usuário estiver logado
-- Criar modal ver mais de uma notificação
-- Criar modal ver mais de um local
+- Consertar funcionamento do mapa (não está focando em um lugar ao apertar enter)
+- Verificar funcionamento do cadastro
+- Criar drawer de configurações quando usuário estiver logado (mudar idioma, preferencias de notificação, etc.)
+- Criar drawer ver mais de uma notificação (todas)
+- Criar drawer pra ver todos os detalhes de um local e poder salvá-lo ao clicar no card de um local na sidebar
+- Criar método de atualizar os dados de previsão quando novas previsões são criadas
+- Criar modal, a partir de um dropdown, para fazer upload de arquivos (isso deve virar informação). Vai exisitr um form que precisa ter titulo descricao, a midia + fonte caso necessário
 - 

@@ -9,16 +9,12 @@ from movrio.utils import send_email_notification
 
 
 class Place(models.Model, Publisher):
-    """
-    TODO: Signals arch to notify Users when estimations changed; Methods to access specifics of a place
-    """
     class PlaceType(models.TextChoices):
         RUA = "RUA", "Rua"
         PRAIA = "PRAIA", "Praia"
         BAIRRO = "BAIRRO", "Bairro"
         PONTO_TURISTICO = "PT_TUR", "Ponto Turístico"
         PRACA = "PRACA", "Praça"
-
     class StatusType(models.TextChoices):
         POUCO_MOVIMENTADO = "PM", "Pouco movimentado"
         MOVIMENTACAO_INTENSA = "MI", "Movimentação intensa"
@@ -59,32 +55,13 @@ class Estimate(models.Model):
     """
     NOTE: Always use datetime.datetime instances to set value of datetime:models.DateTimeField attribute
     """
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="estimates")
     datetime = models.DateTimeField()
-
     amount = models.IntegerField(
         validators=[
             MinValueValidator(0)
         ]
     )
-
-    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name="estimates")
-
-
-    def clean(self):
-        """
-        Include Estimate model pre-validation methods.
-        This is applied before saving any instance of this class.
-        """
-        super().clean()
-        current_datetime = now()
-
-        # Check if Estimate instance is for the present or the future not the past
-        if self.datetime and self.datetime < current_datetime:
-            raise ValidationError(f"datetime: A data de estimativa não pode ser anterior a data atual ({current_datetime})")
-    
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.datetime.strftime('%d/%m/%Y')} às {self.datetime.strftime('%H:%M')}: {self.amount} pessoas"
