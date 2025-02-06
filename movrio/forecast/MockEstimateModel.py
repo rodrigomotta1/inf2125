@@ -8,11 +8,14 @@ class MockEstimateModel(BaseForecastModel):
     Simple estimation model based on random values.
     """
 
-    def load_data(self):
+    def load_data(self, data:Place, params):
         """
         Defines a random place for estimation.
         """
-        self.place = Place.objects.order_by("?").first()
+        if data:
+            self.place = Place.objects.get(id=data.pk)
+        else:
+            self.place = Place.objects.order_by("?").first()
 
     def process_data(self):
         """

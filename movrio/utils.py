@@ -85,6 +85,6 @@ def generate_debug_estimates():
                 amount=estimate_amount
             )
 
-            print(f"[DEBUG] Criada estimativa para {place.name} às {next_estimate_time}: {estimate_amount} pessoas") # type: ignore
+            # print(f"[DEBUG] Criada estimativa para {place.name} às {next_estimate_time}: {estimate_amount} pessoas") # type: ignore
 
         print(f"[DEBUG] Atualizadas estimativas para {len(places)} locais.")

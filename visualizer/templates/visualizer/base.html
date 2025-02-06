@@ -31,42 +31,49 @@
 </head>
 
 <body>
-    <!-- Navbar personalizada -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid d-flex align-items-center">
-            
-            <!-- Logo -->
-            <a class="navbar-brand ms-2 fw-bold" href="#">MOVRIO</a>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm px-3">
+        <div class="container-fluid">
+            <!-- LOGO (3/12) -->
+            <div class="col-2 text-center">
+                <a class="navbar-brand fw-bold" href="{% url 'index' %}">MOVRIO</a>
+            </div>
 
-            <!-- Espaço para alinhar ao limite da sidebar -->
-            <div style="width: 183px;"></div>
-
-            <!-- Formulário de busca -->
-            <form class="d-flex flex-grow-1" id="searchForm" style="max-width: 600px;">
-                <div class="input-group w-100">
+            <!-- FORMULÁRIO DE BUSCA (6/12) -->
+            <div class="col-6 d-flex justify-content-start">
+                <div class="input-group w-50">
                     <input id="searchBox" class="form-control" type="text" placeholder="Buscar local..." aria-label="Search">
-                    <button class="btn btn-success" type="submit">
+                    <button class="btn btn-dark" type="submit">
                         <i class="ti ti-search"></i>
                     </button>
                 </div>
-            </form>
+            </div>
 
-            <!-- Botões de autenticação -->
-            <div class="d-flex ms-auto">
+            <!-- BOTÕES À DIREITA (3/12) -->
+            <div class="col-4 d-flex justify-content-end align-items-center gap-2">
                 {% if user.is_authenticated %}
-                    <!-- Botão de Logout -->
+                    <button class="btn btn-success">
+                        <i class="ti ti-messages me-1"></i> Informe
+                    </button>
+                    <button class="btn btn-light bg-secondary-subtle" data-bs-toggle="offcanvas" data-bs-target="#notificationDrawer">
+                        <i class="ti ti-bell me-1"></i> Notificações
+                    </button>
                     <form method="POST" action="{% url 'logout' %}" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-light me-2 logout-btn">
+                        <button type="submit" class="btn btn-dark logout-btn">
                             <i class="ti ti-logout"></i> Sair
                         </button>
                     </form>
-                {% else %}
-                    <!-- Botão de Login -->
-                    <button class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
-                        <i class="ti ti-login"></i> Entrar
+                    <button class="btn btn-light bg-secondary-subtle" data-bs-toggle="offcanvas" data-bs-target="#settingsDrawer">
+                        <i class="ti ti-settings fs-6"></i>
                     </button>
-                    <button class="btn btn-success fw-2" data-bs-toggle="modal" data-bs-target="#signupModal" ><i class="ti ti-location"></i> Cadastrar-se</button>
+                {% else %}
+                    <button class="btn btn-light bg-secondary-subtle" data-bs-toggle="modal" data-bs-target="#signupModal">
+                        <i class="ti ti-compass me-1"></i> Cadastre-se
+                    </button>
+                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="ti ti-login me-1"></i> Entrar
+                    </button>
                 {% endif %}
             </div>
 
@@ -120,8 +127,8 @@
                             <h2 class="text-center fw-bold text-uppercase">MOVRIO</h2>
                             <p class="text-muted text-center fs-7 mb-3">Visualize a movimentação de pessoas pela cidade</p>
                             <div class="mb-3">
-                                <label for="id_username" class="form-label">Nome de Usuário</label>
-                                <input type="text" class="form-control" name="username" id="id_username" required>
+                                <label for="id_username_su" class="form-label">Nome de Usuário</label>
+                                <input type="text" class="form-control" name="username" id="id_username_su" required>
                             </div>
 
                             <div class="mb-3">
@@ -143,9 +150,30 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </nav>
+
+    <!-- DRAWER CONFIGURAÇÕES -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="settingsDrawer">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Configurações</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p>Configurações do usuário</p>
+        </div>
+    </div>
+
+    <!-- DRAWER NOTIFICAÇÕES -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="notificationDrawer">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Notificações</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p>Notificações importantes ao usuário</p>
+        </div>
+    </div>
 
     <!-- Container flexível para ocupar toda a área abaixo da navbar -->
     <div class="content-container d-flex w-100">

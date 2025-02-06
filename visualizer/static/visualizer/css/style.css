@@ -32,25 +32,15 @@
 }
 
 /* Estilo padrão do botão de logout */
-.logout-btn {
-    transition: all 0.3s ease-in-out;
-}
 
-/* Ao passar o mouse ou pressionar, o botão fica vermelho */
-.logout-btn:hover,
-.logout-btn:active {
-    background-color: #dc3545 !important;
-    border-color: #dc3545 !important;
-    color: white !important;
-}
 
 .invalid-feedback {
     display: block;
 }
 
 .sidebar {
-    width: 40vw; /* 🔹 Ocupa no máximo 10% da largura da tela */
-    max-width: 400px; /* 🔹 Garante que não fique muito estreita */
+    width: 17.6vw; /* 🔹 Ocupa no máximo 10% da largura da tela */
+    /* max-width: 20%; */
     display: flex;
     flex-direction: column;
     height: 100vh; /* 🔹 Ocupa toda a altura da tela */

@@ -2,14 +2,24 @@ var map;
 var heatmap;
 
 function initMap() {
-    console.log("JavaScript carregado corretamente.");
+    const rioBounds = {
+        north: -22.75,
+        south: -23.10,
+        west: -43.8,
+        east: -43.0,
+    };
+
     // Inicializa o mapa
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12,
+        center: { lat: -22.95, lng: -43.20 }, // Ponto inicial: Zona Sul do Rio
+        zoom: 13,
         center: { lat: -22.9068, lng: -43.1729 }, // Rio de Janeiro
         mapTypeId: 'roadmap',
+        minZoom: 10,
+        mapTypeControl: false,
         scrollwheel: true, // 🔹 Permite zoom com scroll
         styles: [
+            { featureType: "all", elementType: "geometry", stylers: [{ saturation: -100 }, { lightness: 20 }] },
             {
                 featureType: "poi",
                 elementType: "all",
@@ -40,8 +50,16 @@ function initMap() {
                 elementType: "labels",
                 stylers: [{ visibility: "on" }] // 🔹 Mantém nomes dos bairros
             }
-        ]
+        ],
+        restriction: {
+            latLngBounds: rioBounds, // Restringe a visualização ao Rio de Janeiro
+            strictBounds: true,  // Impede que o usuário mova o mapa para fora dos limites
+        },
     });
+
+    // Ativar informações de tráfego
+    const trafficLayer = new google.maps.TrafficLayer();
+    trafficLayer.setMap(map);
 
     // Criando o Heatmap Layer
     heatmap = new google.maps.visualization.HeatmapLayer({

@@ -4,11 +4,12 @@ from itertools import chain
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.shortcuts import render
 
-from .models import Place, ThirdPartyInformation, ImageInformation, VideoInformation, UserProfile
+from .models import Place, ThirdPartyInformation, ImageInformation, VideoInformation, UserProfile, Estimate
 
 
 def index(request):
@@ -73,6 +74,24 @@ def index(request):
 
     return render(request, "visualizer/heatmap.html", context)
 
+
+# def get_latest_estimates(request):
+#     """
+#     Retorna as últimas estimativas para todos os locais
+#     Envia ao frontend via AJAX
+#     """
+#     places = Place.objects.all()
+
+#     data = [
+#         {
+#             "lat": place.latitude,
+#             "lng": place.longitude,
+#             "amount": place.estimates.order_by('-datetime').first().amount if place.estimates.exists() else 0 # type: ignore
+#         }
+#         for place in places
+#     ]
+
+#     return JsonResponse(data, safe=False)
 
 class CustomLoginView(LoginView):
     """
