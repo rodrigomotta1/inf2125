@@ -302,7 +302,7 @@
 
             <!-- Seção de Informações do Local -->
             <h6 class="mt-3">Informações</h6>
-            <div class="list-group overflow-auto" style="max-height: 200px;" id="infoList">
+            <div class="list-group overflow-auto" style="max-height: 450px;" id="infoList">
                 <!-- Populado dinamicamente -->
             </div>
         </div>
@@ -346,7 +346,85 @@
                 {% endfor %}
             {% endif %}
         });
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            const placeDetailsDrawer = new bootstrap.Offcanvas(document.getElementById("placeDetailsDrawer"));
+            const savePlaceBtn = document.getElementById("toggleSavePlaceBtn");
+            const savePlaceText = document.getElementById("savePlaceText");
 
+            document.querySelectorAll(".place-card").forEach(card => {
+                card.addEventListener("click", function () {
+                    const placeId = this.dataset.placeId;
+
+                    fetch(`/api/place_details/${placeId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById("placeName").textContent = data.name;
+                            document.getElementById("trendIcon").className = data.trend_icon;
+                            document.getElementById("currentEstimate").textContent = `Estimativa Atual: ${data.current_estimate} pessoas`;
+
+                            const historyTable = document.getElementById("historyTable");
+                            historyTable.innerHTML = "";
+                            data.history.forEach(entry => {
+                                historyTable.innerHTML += `<tr><td>${entry.time}</td><td>${entry.amount}</td></tr>`;
+                            });
+
+                            const infoList = document.getElementById("infoList");
+                            infoList.innerHTML = "";
+                            data.information.third_party.forEach(info => {
+                                infoList.innerHTML += `<div class="list-group-item">
+                                    <strong>${info.title}</strong> <br> ${info.description}
+                                    <small class="text-muted">${info.created_at}</small>
+                                </div>`;
+                            });
+
+                            // Atualizar o estado do botão de salvar
+                            savePlaceBtn.dataset.placeId = placeId;
+                            if (data.is_saved) {
+                                savePlaceText.textContent = "Esquecer local";
+                                savePlaceBtn.classList.replace("btn-dark", "btn-danger");
+                            } else {
+                                savePlaceText.textContent = "Acompanhar local";
+                                savePlaceBtn.classList.replace("btn-danger", "btn-dark");
+                            }
+
+                            placeDetailsDrawer.show();
+                        })
+                        .catch(error => console.error("Erro ao carregar os detalhes do local:", error));
+                });
+            });
+
+            // Evento para salvar/remover local ao clicar no botão
+            savePlaceBtn.addEventListener("click", function () {
+                const placeId = this.dataset.placeId;
+
+                fetch("/api/toggle_saved_place/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({ place_id: placeId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.saved) {
+                            savePlaceText.textContent = "Esquecer local";
+                            savePlaceBtn.classList.replace("btn-dark", "btn-danger");
+                        } else {
+                            savePlaceText.textContent = "Acompanhar local";
+                            savePlaceBtn.classList.replace("btn-danger", "btn-dark");
+                        }
+                        showToast(data.saved ? "Local salvo!" : "Local removido!", "success");
+                    } else {
+                        showToast("Erro ao atualizar local.", "danger");
+                    }
+                })
+                .catch(error => console.error("Erro ao salvar local:", error));
+            });
+        });
+        
         document.addEventListener("DOMContentLoaded", function () {
             const placeSelect = document.querySelector("#id_place");
             if (placeSelect) {

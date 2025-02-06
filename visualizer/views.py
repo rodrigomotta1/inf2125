@@ -135,7 +135,7 @@ def get_place_details(request, place_id):
 
     # Histórico de estimativas (últimos 10 registros)
     history = place.estimates.order_by("-datetime")
-    history_data = [{"time": e.datetime.strftime("%H:%M"), "amount": e.amount} for e in history][:10]
+    history_data = [{"time": e.datetime.strftime("%H:%M"), "amount": e.amount} for e in history][:20]
 
     # Buscar todas as informações do local usando DatabaseQueryManager
     info_data = query_manager.get_all_info_for_place(place)

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from visualizer.models import Place, ThirdPartyInformation, VideoInformation, ImageInformation
+from visualizer.models import Place, ThirdPartyInformation, VideoInformation, ImageInformation, User
 import random
 
 class Command(BaseCommand):
@@ -8,6 +8,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         places = Place.objects.all()
+        user = User.objects.filter(id=1).first()
+
         if not places.exists():
             self.stdout.write(self.style.ERROR("Nenhum lugar encontrado no banco de dados."))
             return
@@ -30,7 +32,8 @@ class Command(BaseCommand):
                 title="Vídeo sobre o Local",
                 description=f"Veja um vídeo sobre {place.name}.",
                 video_url="https://www.youtube.com/watch?v=abcdef",
-                created_at=now()
+                created_at=now(),
+                author=user
             )
 
             # Criar uma informação de imagem
@@ -39,7 +42,8 @@ class Command(BaseCommand):
                 title="Foto Atualizada",
                 description=f"Imagem recente de {place.name}.",
                 image="default.jpg",  # Supondo uma imagem demonstrativa no sistema
-                created_at=now()
+                created_at=now(),
+                author=user
             )
 
             info_count += 3  # Criamos três informações para cada lugar
