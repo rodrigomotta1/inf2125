@@ -2,21 +2,24 @@ import json
 from itertools import chain
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Place, ThirdPartyInformation, ImageInformation, VideoInformation, UserProfile, Estimate
-from .forms import UserSettingsForm
+from .forms import UserSettingsForm, InformationUploadForm
 from movrio.utils import DatabaseQueryManager
 
 query_manager = DatabaseQueryManager()
 
 def index(request):
+    form = InformationUploadForm()
+
     places = Place.objects.all().order_by("name")
 
     # Gerar os pontos de calor a partir das estimativas
@@ -57,6 +60,7 @@ def index(request):
         saved_places = [place.pk for place in user_profile.saved_places.all()]  # type: ignore
 
     context = {
+        "form": form,
         "heatmap_data": json.dumps(heatmap_data),
         "google_maps_api_key": settings.GOOGLE_MAPS_API_KEY,
         "activity_data": activity_data,
@@ -150,3 +154,47 @@ def get_place_details(request, place_id):
         "information": info_data,
         "is_saved": is_saved
     })
+
+@login_required
+def upload_information(request):
+    """
+    Processa o envio do formulário e redireciona para index com um toast de feedback.
+    """
+    if request.method == "POST":
+        form = InformationUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            place = form.cleaned_data["place"]  # Pega o local selecionado
+            info_type = form.cleaned_data["info_type"]
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
+
+            if info_type == "third_party":
+                ThirdPartyInformation.objects.create(
+                    place=place,
+                    title=title,
+                    description=description,
+                    source_name=form.cleaned_data["source_name"],
+                    source_url=form.cleaned_data["source_url"],
+                )
+            elif info_type == "video":
+                VideoInformation.objects.create(
+                    place=place,
+                    title=title,
+                    description=description,
+                    video_url=form.cleaned_data["video_url"],
+                    author=request.user
+                )
+            elif info_type == "image":
+                ImageInformation.objects.create(
+                    place=place,
+                    title=title,
+                    description=description,
+                    image=form.cleaned_data["image"],
+                    author=request.user
+                )
+
+            messages.success(request, "Informação enviada com sucesso!")
+        else:
+            messages.error(request, "Erro ao enviar a informação. Verifique os campos.")
+
+    return redirect("index")  # Redireciona para index.html após o envio

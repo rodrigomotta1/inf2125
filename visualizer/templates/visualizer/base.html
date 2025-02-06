@@ -52,7 +52,7 @@
             <!-- BOTÕES À DIREITA (3/12) -->
             <div class="col-4 d-flex justify-content-end align-items-center gap-2">
                 {% if user.is_authenticated %}
-                    <button class="btn btn-success">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadInfoModal">
                         <i class="ti ti-messages me-1"></i> Informe
                     </button>
                     <button class="btn btn-light bg-secondary-subtle" data-bs-toggle="offcanvas" data-bs-target="#notificationDrawer">
@@ -150,6 +150,65 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal de Upload de Informações -->
+            <div class="modal fade" id="uploadInfoModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Enviar Informação</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="uploadInfoForm" action="{% url 'upload_information' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                <!-- Seleção de Local -->
+                                <div class="mb-3">
+                                    <label class="form-label">Local</label>
+                                    {{ form.place }}
+                                </div>
+
+                                <!-- Tipo de Informação -->
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo de Informação</label>
+                                    {{ form.info_type }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Título</label>
+                                    {{ form.title }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Descrição</label>
+                                    {{ form.description }}
+                                </div>
+
+                                <div class="mb-3 d-none" id="sourceFields">
+                                    <label class="form-label">Fonte</label>
+                                    {{ form.source_name }}
+                                    <label class="form-label">URL da Fonte</label>
+                                    {{ form.source_url }}
+                                </div>
+
+                                <div class="mb-3 d-none" id="videoFields">
+                                    <label class="form-label">URL do Vídeo</label>
+                                    {{ form.video_url }}
+                                </div>
+
+                                <div class="mb-3 d-none" id="imageFields">
+                                    <label class="form-label">Imagem</label>
+                                    {{ form.image }}
+                                </div>
+
+                                <button type="submit" class="btn btn-success">Enviar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </nav>
 
@@ -258,13 +317,6 @@
 
     <!-- Script para garantir que o modal feche corretamente -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (document.querySelector("#loginModal").classList.contains("show")) {
-                var modal = new bootstrap.Modal(document.getElementById("loginModal"), {});
-                modal.show();
-            }
-        });
-
         function showToast(message, type = "success") {
             const toastEl = document.getElementById("genericToast");
             const toastBody = document.getElementById("toastBody");
@@ -281,6 +333,41 @@
             toast.show();
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.querySelector("#loginModal").classList.contains("show")) {
+                var modal = new bootstrap.Modal(document.getElementById("loginModal"), {});
+                modal.show();
+            }
+
+                    // Processar mensagens do Django e exibir Toasts
+            {% if messages %}
+                {% for message in messages %}
+                    showToast("{{ message }}", "{% if message.tags == 'error' %}danger{% else %}success{% endif %}");
+                {% endfor %}
+            {% endif %}
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const placeSelect = document.querySelector("#id_place");
+            if (placeSelect) {
+                placeSelect.selectedIndex = 0;  // Define o primeiro item como padrão
+            }
+
+            const infoTypeField = document.querySelector("#id_info_type");
+            const sourceFields = document.querySelector("#sourceFields");
+            const videoFields = document.querySelector("#videoFields");
+            const imageFields = document.querySelector("#imageFields");
+
+            function toggleFields() {
+                const selectedType = infoTypeField.value;
+                sourceFields.classList.toggle("d-none", selectedType !== "third_party");
+                videoFields.classList.toggle("d-none", selectedType !== "video");
+                imageFields.classList.toggle("d-none", selectedType !== "image");
+            }
+
+            infoTypeField.addEventListener("change", toggleFields);
+            toggleFields();
+        });
 
         document.addEventListener("DOMContentLoaded", function () {
             const settingsForm = document.getElementById("user-settings-form");

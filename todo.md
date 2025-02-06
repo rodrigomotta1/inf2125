@@ -1,6 +1,6 @@
 - ~~Criar drawer de configurações quando usuário estiver logado (mudar idioma, preferencias de notificação, etc.)~~
 - Criar drawer "feed" de notificações
-- Criar drawer pra ver todos os detalhes de um local e poder salvá-lo ao clicar no card de um local na sidebar
+- ~~Criar drawer pra ver todos os detalhes de um local e poder salvá-lo ao clicar no card de um local na sidebar~~
 - Criar método de atualizar os dados de previsão quando novas previsões são criadas
 - Criar modal, a partir de um dropdown, para fazer upload de arquivos (isso deve virar informação). Vai exisitr um form que precisa ter titulo descricao, a midia + fonte caso necessário
 - Verificar funcionamento do cadastro
