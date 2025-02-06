@@ -1,4 +1,4 @@
-- Criar drawer de configurações quando usuário estiver logado (mudar idioma, preferencias de notificação, etc.)
+- ~~Criar drawer de configurações quando usuário estiver logado (mudar idioma, preferencias de notificação, etc.)~~
 - Criar drawer "feed" de notificações
 - Criar drawer pra ver todos os detalhes de um local e poder salvá-lo ao clicar no card de um local na sidebar
 - Criar método de atualizar os dados de previsão quando novas previsões são criadas

@@ -47,6 +47,25 @@ class Place(models.Model, Publisher):
             'status': new_status
         })
 
+    def get_trend_icon(self) -> str:
+        """
+        Retorna o ícone de tendência baseado nas últimas estimativas do local.
+        """
+        estimates = self.estimates.order_by("-datetime")[:2]  # Pega as duas últimas estimativas
+
+        if len(estimates) < 2:
+            return "ti ti-minus"  # Sem dados suficientes para comparar
+
+        latest_estimate = estimates[0].amount
+        second_latest_estimate = estimates[1].amount
+
+        if latest_estimate > second_latest_estimate:
+            return "ti ti-trending-up"
+        elif latest_estimate < second_latest_estimate:
+            return "ti ti-trending-down"
+        else:
+            return "ti ti-minus"
+
     def __str__(self):
         return self.name
 

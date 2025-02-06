@@ -27,10 +27,10 @@
             </div>
             <div class="scrollable-content">
                 {% for place in activity_data %}
-                    <div class="card p-2 mb-2 shadow-sm 
+                    <div class="card place-card p-2 mb-2 shadow-sm 
                         {% if place.status == 'PM' %} bg-success text-white 
                         {% elif place.status == 'MI' %} bg-warning text-dark 
-                        {% else %} bg-danger text-white {% endif %}">
+                        {% else %} bg-danger text-white {% endif %} hover-effect" data-place-id="{{ place.id }}">
                         <div class="d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">{{ place.name }}</h6>
                             <i class="{{ place.trend_icon }} fs-4"></i>
@@ -98,6 +98,84 @@
 {% block extra_js %}
     <script>
         var heatmapData = JSON.parse("{{heatmap_data | escapejs}}");
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const placeDetailsDrawer = new bootstrap.Offcanvas(document.getElementById("placeDetailsDrawer"));
+            const savePlaceBtn = document.getElementById("toggleSavePlaceBtn");
+            const savePlaceText = document.getElementById("savePlaceText");
+
+            document.querySelectorAll(".place-card").forEach(card => {
+                card.addEventListener("click", function () {
+                    const placeId = this.dataset.placeId;
+
+                    fetch(`/api/place_details/${placeId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById("placeName").textContent = data.name;
+                            document.getElementById("trendIcon").className = data.trend_icon;
+                            document.getElementById("currentEstimate").textContent = `Estimativa Atual: ${data.current_estimate} pessoas`;
+
+                            const historyTable = document.getElementById("historyTable");
+                            historyTable.innerHTML = "";
+                            data.history.forEach(entry => {
+                                historyTable.innerHTML += `<tr><td>${entry.time}</td><td>${entry.amount}</td></tr>`;
+                            });
+
+                            const infoList = document.getElementById("infoList");
+                            infoList.innerHTML = "";
+                            data.information.third_party.forEach(info => {
+                                infoList.innerHTML += `<div class="list-group-item">
+                                    <strong>${info.title}</strong> <br> ${info.description}
+                                    <small class="text-muted">${info.created_at}</small>
+                                </div>`;
+                            });
+
+                            // Atualizar o estado do botão de salvar
+                            savePlaceBtn.dataset.placeId = placeId;
+                            if (data.is_saved) {
+                                savePlaceText.textContent = "Esquecer local";
+                                savePlaceBtn.classList.replace("btn-outline-primary", "btn-danger");
+                            } else {
+                                savePlaceText.textContent = "Acompanhar local";
+                                savePlaceBtn.classList.replace("btn-danger", "btn-outline-primary");
+                            }
+
+                            placeDetailsDrawer.show();
+                        })
+                        .catch(error => console.error("Erro ao carregar os detalhes do local:", error));
+                });
+            });
+
+            // Evento para salvar/remover local ao clicar no botão
+            savePlaceBtn.addEventListener("click", function () {
+                const placeId = this.dataset.placeId;
+
+                fetch("/api/toggle_saved_place/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({ place_id: placeId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.saved) {
+                            savePlaceText.textContent = "Esquecer local";
+                            savePlaceBtn.classList.replace("btn-dark", "btn-danger");
+                        } else {
+                            savePlaceText.textContent = "Acompanhar local";
+                            savePlaceBtn.classList.replace("btn-danger", "btn-dark");
+                        }
+                        showToast(data.saved ? "Local salvo!" : "Local removido!", "success");
+                    } else {
+                        showToast("Erro ao atualizar local.", "danger");
+                    }
+                })
+                .catch(error => console.error("Erro ao salvar local:", error));
+            });
+        });
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places,visualization&callback=initMap" async defer></script>

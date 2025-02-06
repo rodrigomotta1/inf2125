@@ -207,6 +207,48 @@
         </div>
     </div>
 
+    <!-- Drawer de Informações do Local -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="placeDetailsDrawer">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title d-flex align-items-center">
+                <span id="placeName">Nome do Local</span>
+                <button id="toggleSavePlaceBtn" class="btn btn-dark btn-sm ms-3">
+                    <i class="ti ti-bookmark"></i> <span id="savePlaceText">Acompanhar local</span>
+                </button>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- Ícone de tendência -->
+            <div class="d-flex align-items-center mb-3">
+                <i id="trendIcon" class="fs-3"></i>
+                <span id="currentEstimate" class="ms-2 fw-bold">Estimativa Atual: --</span>
+            </div>
+
+            <!-- Tabela de Histórico de Estimativas -->
+            <h6>Histórico de Estimativas</h6>
+            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Estimativa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <!-- Populado dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Seção de Informações do Local -->
+            <h6 class="mt-3">Informações</h6>
+            <div class="list-group overflow-auto" style="max-height: 200px;" id="infoList">
+                <!-- Populado dinamicamente -->
+            </div>
+        </div>
+    </div>
+
     <!-- Container flexível para ocupar toda a área abaixo da navbar -->
     <div class="content-container d-flex w-100">
         {% block content %}{% endblock %}

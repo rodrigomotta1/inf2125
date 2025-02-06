@@ -8,14 +8,16 @@ from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from .models import Place, ThirdPartyInformation, ImageInformation, VideoInformation, UserProfile, Estimate
 from .forms import UserSettingsForm
+from movrio.utils import DatabaseQueryManager
 
+query_manager = DatabaseQueryManager()
 
 def index(request):
-    places = Place.objects.all()
+    places = Place.objects.all().order_by("name")
 
     # Gerar os pontos de calor a partir das estimativas
     heatmap_data = []
@@ -33,24 +35,13 @@ def index(request):
     activity_data = []
     for place in places:
         estimates = place.estimates.order_by('datetime') # type: ignore
-        
-        if estimates.exists():  # 🔹 Garante que o local tem estimativas
-            current_estimate = estimates.first()
-            future_estimate = estimates.filter(datetime__gt=current_estimate.datetime).first()
 
-            trend_icon = "ti ti-minus"
-            if future_estimate:
-                if future_estimate.amount > current_estimate.amount:
-                    trend_icon = "ti ti-trending-up"
-                elif future_estimate.amount < current_estimate.amount:
-                    trend_icon = "ti ti-trending-down"
-
-            activity_data.append({
-                "id": place.pk,
-                "name": place.name,
-                "status": place.status,
-                "trend_icon": trend_icon
-            })
+        activity_data.append({
+            "id": place.pk,
+            "name": place.name,
+            "status": place.status,
+            "trend_icon": place.get_trend_icon(),
+        })
 
     # Obter notificações gerais sobre o Rio
     notifications = list(chain(
@@ -75,25 +66,6 @@ def index(request):
     }
 
     return render(request, "visualizer/heatmap.html", context)
-
-
-# def get_latest_estimates(request):
-#     """
-#     Retorna as últimas estimativas para todos os locais
-#     Envia ao frontend via AJAX
-#     """
-#     places = Place.objects.all()
-
-#     data = [
-#         {
-#             "lat": place.latitude,
-#             "lng": place.longitude,
-#             "amount": place.estimates.order_by('-datetime').first().amount if place.estimates.exists() else 0 # type: ignore
-#         }
-#         for place in places
-#     ]
-
-#     return JsonResponse(data, safe=False)
 
 class CustomLoginView(LoginView):
     """
@@ -127,3 +99,54 @@ def update_user_settings(request):
         return JsonResponse({"success": False, "errors": form.errors}, status=400)
     
     return JsonResponse({"success": False}, status=400)
+
+@login_required
+def toggle_saved_place(request):
+    """
+    Adiciona ou remove um local salvo para o usuário logado.
+    """
+    if request.method == "POST":
+        place_id = request.POST.get("place_id")
+        place = get_object_or_404(Place, id=place_id)
+        user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+        if place in user_profile.saved_places.all():
+            user_profile.saved_places.remove(place)
+            return JsonResponse({"success": True, "saved": False})
+        else:
+            user_profile.saved_places.add(place)
+            return JsonResponse({"success": True, "saved": True})
+
+    return JsonResponse({"success": False}, status=400)
+
+def get_place_details(request, place_id):
+    """
+    Retorna detalhes de um local, incluindo estimativas e informações.
+    """
+    place = get_object_or_404(Place, id=place_id)
+
+    # Última estimativa
+    last_estimate = place.estimates.order_by("-datetime").first()
+    current_estimate = last_estimate.amount if last_estimate else 0
+
+    # Histórico de estimativas (últimos 10 registros)
+    history = place.estimates.order_by("-datetime")
+    history_data = [{"time": e.datetime.strftime("%H:%M"), "amount": e.amount} for e in history][:10]
+
+    # Buscar todas as informações do local usando DatabaseQueryManager
+    info_data = query_manager.get_all_info_for_place(place)
+
+    # Verifica se o local está salvo pelo usuário logado
+    is_saved = False
+    if request.user.is_authenticated:
+        user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        is_saved = place in user_profile.saved_places.all()
+
+    return JsonResponse({
+        "name": place.name,
+        "trend_icon": place.get_trend_icon(),
+        "current_estimate": current_estimate,
+        "history": history_data,
+        "information": info_data,
+        "is_saved": is_saved
+    })

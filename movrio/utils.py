@@ -34,6 +34,21 @@ class DatabaseQueryManager(Singleton):
         if user.is_authenticated:
             return user.userprofile.saved_places.all()
         return []
+    
+    def get_all_info_for_place(self, place):
+        """ Retorna todas as informações do local, incluindo ThirdParty, Video e ImageInformation """
+        from visualizer.models import ThirdPartyInformation, VideoInformation, ImageInformation
+
+        third_party_info = ThirdPartyInformation.objects.filter(place=place).order_by("-created_at")
+        video_info = VideoInformation.objects.filter(place=place).order_by("-created_at")
+        image_info = ImageInformation.objects.filter(place=place).order_by("-created_at")
+
+        return {
+            "third_party": list(third_party_info.values("title", "description", "source_name", "source_url", "created_at")),
+            "videos": list(video_info.values("title", "description", "video_url", "created_at")),
+            "images": list(image_info.values("title", "description", "image", "created_at")),
+        }
+
 
 
 def send_email_notification(user_profile, message):
