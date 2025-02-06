@@ -56,3 +56,22 @@
 - **[RN02]** Não há restrição sobre o tipo de informações que o usuário pode enviar ao sistema, desde que sejam relacionadas à atividade pública em um local.
 - **[RN03]** As informações enviadas pelos usuários devem ser validadas antes de serem incorporadas ao sistema.
 - **[RN04]** O sistema deve permitir que os usuários logados vejam a atividade nos locais que salvaram, com base nas estimativas do sistema e em dados enviados por outros usuários.
+
+---
+
+## Detalhes sobre modelagem
+- As classes de *framework* são as que permitem que um *software* de previsão de pesssoas atrelado a um sistema de notificação seja implementado, i.e.:
+  - ModeloBase
+  - Observador e Publicador
+  - DadosDAO
+  - Informacao (serve como material para estimativas e previsões de ModeloBase)
+  
+  Todas as outras classes são de instância
+
+- As classes *hotspots* são:
+  - Informacao 
+  - ModeloBase
+  - Observador e Publicador
+  - DadosDAO
+  
+  As especializações de Informacao e ModeloBase são os *frozenspots*
