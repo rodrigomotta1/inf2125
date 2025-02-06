@@ -17,11 +17,11 @@ Este projeto consiste no desenvolvimento de uma aplicação web que permite a vi
 - A visualização do mapa e a interação com o painel de informações são feitas via frontend em **React**, enquanto o **backend Django REST** processa as estimativas e recupera os dados necessários.
 
 ## Documentação disponível
-- [x] [CBL-SE](/movrio/docs/cbl.md) redigido
-- [x] [Registro de perguntas, respostas e recursos](/movrio/docs/guiding_answers.md)
-- [x] [Reqisitos funcionais, Requisitos não funcionais e Regras de negócio](/movrio/docs/requisitos.md)
-- [x] [Diagrama de classes UML](/movrio/docs/diagrama_classes.puml) *(deve ser visualizado através de algum leitor de [PlantUML](https://www.planttext.com/))*
-- [x] ~~[Cronograma de desenvolvimento](/movrio/docs/cronograma.md)~~
+- [x] [CBL-SE](/docs/cbl.md) redigido
+- [x] [Registro de perguntas, respostas e recursos](/docs/guiding_answers.md)
+- [x] [Reqisitos funcionais, Requisitos não funcionais e Regras de negócio](/docs/requisitos.md)
+- [x] [Diagrama de classes UML](/docs/uml_classes.pdf)
+- [x] ~~[Cronograma de desenvolvimento](/#)~~
 
 
 ## 🚀 Setup
