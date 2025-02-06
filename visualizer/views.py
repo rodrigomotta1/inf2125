@@ -2,6 +2,7 @@ import json
 from itertools import chain
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
@@ -10,6 +11,7 @@ from django.views.generic import CreateView
 from django.shortcuts import render
 
 from .models import Place, ThirdPartyInformation, ImageInformation, VideoInformation, UserProfile, Estimate
+from .forms import UserSettingsForm
 
 
 def index(request):
@@ -112,3 +114,16 @@ class SignUpView(CreateView):
     form_class = UserCreationForm
     template_name = "registration/signup.html"
     success_url = reverse_lazy("login")
+
+@login_required
+def update_user_settings(request):
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = UserSettingsForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"success": True})
+        return JsonResponse({"success": False, "errors": form.errors}, status=400)
+    
+    return JsonResponse({"success": False}, status=400)

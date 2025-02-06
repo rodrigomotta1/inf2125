@@ -4,5 +4,3 @@
 - Criar método de atualizar os dados de previsão quando novas previsões são criadas
 - Criar modal, a partir de um dropdown, para fazer upload de arquivos (isso deve virar informação). Vai exisitr um form que precisa ter titulo descricao, a midia + fonte caso necessário
 - Verificar funcionamento do cadastro
-- Consertar funcionamento do mapa (não está focando em um lugar ao apertar enter)
-- 

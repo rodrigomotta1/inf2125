@@ -160,7 +160,39 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
-            <p>Configurações do usuário</p>
+            <p>
+                Configurações do usuário:
+                {% if user.is_authenticated %}
+                    <b>{{ user.username }}</b>
+                {% endif %}
+            </p>
+            <form id="user-settings-form">
+                {% csrf_token %}
+                
+                <!-- Switch para ativar/desativar notificações -->
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notificationsEnabled" 
+                           name="notifications_enabled" {% if request.user.userprofile.notifications_enabled %}checked{% endif %}>
+                    <label class="form-check-label" for="notificationsEnabled">Permitir notificações</label>
+                </div>
+    
+                <!-- Botão de salvar -->
+                <button type="submit" id="save-settings-btn" class="btn btn-dark" disabled>
+                    <i class="ti ti-check fs-5 me-1"></i> Salvar alterações
+                </button>
+            </form>
+        </div>
+    </div>
+
+     <!-- Toast Genérico -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+        <div id="genericToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div id="toastBody" class="toast-body">
+                    Mensagem genérica
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+            </div>
         </div>
     </div>
 
@@ -189,6 +221,60 @@
                 var modal = new bootstrap.Modal(document.getElementById("loginModal"), {});
                 modal.show();
             }
+        });
+
+        function showToast(message, type = "success") {
+            const toastEl = document.getElementById("genericToast");
+            const toastBody = document.getElementById("toastBody");
+
+            // Definir a mensagem
+            toastBody.textContent = message;
+
+            // Limpar classes anteriores e adicionar a nova cor
+            toastEl.classList.remove("text-bg-success", "text-bg-danger", "text-bg-warning", "text-bg-info");
+            toastEl.classList.add(`text-bg-${type}`);
+
+            // Exibir o Toast
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const settingsForm = document.getElementById("user-settings-form");
+            const saveButton = document.getElementById("save-settings-btn");
+            const notificationsSwitch = document.getElementById("notificationsEnabled");
+
+            let originalState = notificationsSwitch.checked;
+
+            // Habilita o botão "Salvar alterações" se houver mudança
+            notificationsSwitch.addEventListener("change", function () {
+                saveButton.disabled = (notificationsSwitch.checked === originalState);
+            });
+
+            settingsForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                fetch("/api/update_settings/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams(new FormData(settingsForm))
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        originalState = notificationsSwitch.checked;
+                        saveButton.disabled = true;
+                        showToast("Configurações salvas com sucesso!", "success");
+                    } else {
+                        showToast("Erro ao salvar as configurações.", "danger");
+                    }
+                })
+                .catch(error => showToast("Erro ao comunicar com o servidor.", "danger"));
+            });
         });
     </script>
 
