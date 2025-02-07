@@ -66,6 +66,17 @@ class Place(models.Model, Publisher):
         else:
             return "ti ti-minus"
 
+    def get_status_display(self):
+        """
+        Retorna o nome por extenso do status.
+        """
+        if self.status == "PM":
+            return "Pouco movimentado"
+        elif self.status == "MI":
+            return "Movimentação intensa"
+        elif self.status == "MM":
+            return "Muito movimentado"
+                
     def __str__(self):
         return self.name
 
@@ -81,6 +92,21 @@ class Estimate(models.Model):
             MinValueValidator(0)
         ]
     )
+
+    def save(self, *args, **kwargs):
+        """
+        Atualiza o status da instância de Place ao salvar um novo Estimate recente.
+        """
+        super().save(*args, **kwargs)  # Salva a instância primeiro
+
+        # Verifica se o estimate foi criado recentemente (dentro de 5 minutos do tempo atual)
+        if abs((self.datetime - now()).total_seconds()) <= 300:
+            if self.amount <= 150:
+                self.place.change_status(Place.StatusType.POUCO_MOVIMENTADO)
+            elif 151 <= self.amount <= 300:
+                self.place.change_status(Place.StatusType.MOVIMENTACAO_INTENSA)
+            else:
+                self.place.change_status(Place.StatusType.MUITO_MOVIMENTADO)
 
     def __str__(self):
         return f"{self.datetime.strftime('%d/%m/%Y')} às {self.datetime.strftime('%H:%M')}: {self.amount} pessoas"

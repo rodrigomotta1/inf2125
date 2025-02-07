@@ -146,13 +146,16 @@ def get_place_details(request, place_id):
         user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
         is_saved = place in user_profile.saved_places.all()
 
+    print(place.get_status_display())
+    
     return JsonResponse({
         "name": place.name,
         "trend_icon": place.get_trend_icon(),
         "current_estimate": current_estimate,
         "history": history_data,
         "information": info_data,
-        "is_saved": is_saved
+        "is_saved": is_saved,
+        "status": place.get_status_display()
     })
 
 @login_required

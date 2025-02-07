@@ -16,19 +16,6 @@
 .scrollable-section {
     position: relative;
     overflow-y: auto;
-    padding-bottom: 10px; /* Para evitar sobreposição do fade */
-}
-
-/* Criando o efeito fade na parte inferior */
-.scrollable-section::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 20px; /* Altura do efeito */
-    background: linear-gradient(to bottom, rgba(248, 249, 250, 0) 0%, rgba(248, 249, 250, 1) 100%);
-    pointer-events: none; /* Para não interferir no scroll */
 }
 
 /* Estilo padrão do botão de logout */
@@ -43,7 +30,7 @@
     /* max-width: 20%; */
     display: flex;
     flex-direction: column;
-    height: 100vh; /* 🔹 Ocupa toda a altura da tela */
+    height: 95vh; /* 🔹 Ocupa toda a altura da tela */
     overflow: hidden;
 }
 
